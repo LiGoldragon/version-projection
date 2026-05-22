@@ -1,0 +1,90 @@
+use nota_codec::NotaTransparent;
+use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
+use thiserror::Error;
+
+use crate::{ComponentName, ContractVersion};
+
+#[derive(
+    Archive, RkyvSerialize, RkyvDeserialize, NotaTransparent, Debug, Clone, PartialEq, Eq, Hash,
+)]
+pub struct RecordKind(String);
+
+impl RecordKind {
+    pub fn new(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
+
+pub type DecodeFunction = fn(&[u8], &RecordKind) -> Result<String, DecodeError>;
+
+#[derive(Clone)]
+pub struct MigrationIndexEntry {
+    component: ComponentName,
+    contract_version: ContractVersion,
+    decode: DecodeFunction,
+}
+
+impl MigrationIndexEntry {
+    pub fn new(
+        component: ComponentName,
+        contract_version: ContractVersion,
+        decode: DecodeFunction,
+    ) -> Self {
+        Self {
+            component,
+            contract_version,
+            decode,
+        }
+    }
+
+    pub fn component(&self) -> &ComponentName {
+        &self.component
+    }
+
+    pub const fn contract_version(&self) -> ContractVersion {
+        self.contract_version
+    }
+
+    pub fn decode(&self, bytes: &[u8], kind: &RecordKind) -> Result<String, DecodeError> {
+        (self.decode)(bytes, kind)
+    }
+}
+
+#[derive(Clone, Default)]
+pub struct MigrationIndex {
+    entries: Vec<MigrationIndexEntry>,
+}
+
+impl MigrationIndex {
+    pub fn new(entries: Vec<MigrationIndexEntry>) -> Self {
+        Self { entries }
+    }
+
+    pub fn entries(&self) -> &[MigrationIndexEntry] {
+        &self.entries
+    }
+
+    pub fn find(
+        &self,
+        component: &ComponentName,
+        contract_version: ContractVersion,
+    ) -> Option<&MigrationIndexEntry> {
+        self.entries.iter().find(|entry| {
+            entry.component.as_str() == component.as_str()
+                && entry.contract_version == contract_version
+        })
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
+pub enum DecodeError {
+    #[error("no decoder for record kind {0}")]
+    UnknownRecordKind(String),
+
+    #[error("decode failed: {0}")]
+    Failed(String),
+}
