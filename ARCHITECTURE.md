@@ -13,7 +13,8 @@ trait, one marker for projected types, payloadless per-operation
 policy records, a compile-time migration index for locating historical
 decoders, and the schema-version hash type. Runtime crates import it
 to build per-version transforms; the companion `signal-version-handover`
-contract ships beside it for the daemon-to-daemon wire shape.
+contract ships beside it for the daemon-to-daemon wire shape, and
+`owner-signal-version-handover` owns administrative handover authority.
 
 ## Components
 
@@ -129,6 +130,12 @@ the upgrade socket itself.
 - Default `SubscribePolicy` is `TerminateAtHandover`.
 - The crate does not depend on `signal-frame`, `signal-sema`, or any
   `signal-persona-*` contract.
+- Administrative handover authority lives in
+  `owner-signal-version-handover`; this library stays projection and
+  policy vocabulary only.
+- Mirror payloads are raw bytes on the `signal-version-handover` wire;
+  this library supplies projection after the receiver decodes those
+  bytes into a versioned type.
 
 ## Non-Goals
 
@@ -147,21 +154,6 @@ the upgrade socket itself.
 open question; moves to the cemented body when settled; retires when
 ruled out.*
 
-- **Owner-side handover authority contract.** No
-  `owner-signal-version-handover` contract ships today. Likely scope
-  if it lands: `ForceFlip` (override the protocol), `Rollback` (revert
-  a recent handover), `Quarantine` (mark a daemon ineligible for
-  upgrade). The contract would sit beside `signal-version-handover`
-  with the same boundary discipline — pure typed wire vocabulary, no
-  runtime code. Open question: whether this collapses into the
-  persona engine's own owner contract or stays a separate triad
-  contract.
-- **Typed `Mirror` payload shape.** Today the `Mirror` operation in
-  `signal-version-handover` carries raw bytes plus a `RecordKind`
-  discriminant. A typed enum holding the archived value directly is
-  the alternative. Open question: forces `version-projection` to
-  import every signal-X crate, which the bytes shape avoids. Lean:
-  bytes, until a second component handover surfaces.
 - **Per-operation policy generation from contract macros.** Today
   policy literals live in each consuming runtime crate. Alternative:
   contract-macro generation from operation annotations. Lean: keep
