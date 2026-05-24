@@ -1,0 +1,24 @@
+{}
+
+[]
+
+[]
+
+[]
+
+{
+  VersionProjection (SourceVersion TargetVersion ProjectionKind)
+  SourceVersion (String)
+  TargetVersion (String)
+  ProjectionKind [Identity FieldWalk Custom Untranslatable]
+  Text (String)
+  Identifier (u64)
+  Name (String)
+  Path (String)
+  Status [Concept Active Retired]
+}
+
+[
+  (Version 0 1)
+  (Status Concept)
+]
