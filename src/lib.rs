@@ -10,7 +10,7 @@ pub mod policy;
 pub mod projection;
 pub mod version;
 
-pub use index::{DecodeError, MigrationIndex, MigrationIndexEntry, RecordKind};
+pub use index::{DecodeError, RecordKind, RuntimeMigrationLookup, RuntimeMigrationLookupEntry};
 pub use policy::{
     ComponentPolicy, OperationKind, OperationPolicy, PerOperationPolicy, ReadPolicy,
     SubscribePolicy, WritePolicy,

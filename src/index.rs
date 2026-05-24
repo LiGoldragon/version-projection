@@ -22,13 +22,13 @@ impl RecordKind {
 pub type DecodeFunction = fn(&[u8], &RecordKind) -> Result<String, DecodeError>;
 
 #[derive(Clone)]
-pub struct MigrationIndexEntry {
+pub struct RuntimeMigrationLookupEntry {
     component: ComponentName,
     contract_version: ContractVersion,
     decode: DecodeFunction,
 }
 
-impl MigrationIndexEntry {
+impl RuntimeMigrationLookupEntry {
     pub fn new(
         component: ComponentName,
         contract_version: ContractVersion,
@@ -55,16 +55,16 @@ impl MigrationIndexEntry {
 }
 
 #[derive(Clone, Default)]
-pub struct MigrationIndex {
-    entries: Vec<MigrationIndexEntry>,
+pub struct RuntimeMigrationLookup {
+    entries: Vec<RuntimeMigrationLookupEntry>,
 }
 
-impl MigrationIndex {
-    pub fn new(entries: Vec<MigrationIndexEntry>) -> Self {
+impl RuntimeMigrationLookup {
+    pub fn new(entries: Vec<RuntimeMigrationLookupEntry>) -> Self {
         Self { entries }
     }
 
-    pub fn entries(&self) -> &[MigrationIndexEntry] {
+    pub fn entries(&self) -> &[RuntimeMigrationLookupEntry] {
         &self.entries
     }
 
@@ -72,7 +72,7 @@ impl MigrationIndex {
         &self,
         component: &ComponentName,
         contract_version: ContractVersion,
-    ) -> Option<&MigrationIndexEntry> {
+    ) -> Option<&RuntimeMigrationLookupEntry> {
         self.entries.iter().find(|entry| {
             entry.component.as_str() == component.as_str()
                 && entry.contract_version == contract_version

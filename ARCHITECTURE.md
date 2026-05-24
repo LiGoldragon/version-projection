@@ -10,7 +10,7 @@ what a component does with the projection result.*
 tier: workspace-universal vocabulary, no daemon, no socket, no redb,
 no Persona-specific content. It owns one bidirectional projection
 trait, one marker for projected types, payloadless per-operation
-policy records, a compile-time migration index for locating historical
+ policy records, a runtime migration lookup for locating historical
 decoders, and the schema-version hash type. Runtime crates import it
 to build per-version transforms; the companion `signal-version-handover`
 contract ships beside it for the daemon-to-daemon wire shape, and
@@ -28,7 +28,7 @@ contract ships beside it for the daemon-to-daemon wire shape, and
 | `WritePolicy` (`Mirror` / `DivergenceRecord` / `Reject`) | `src/policy.rs` |
 | `ReadPolicy` (`ActiveProjectsResponse` / `DualQueryMerge` / `ActiveOnly`) | `src/policy.rs` |
 | `SubscribePolicy` (`ResumeAgainstNext` / `TerminateAtHandover`, default `TerminateAtHandover`) | `src/policy.rs` |
-| `MigrationIndex`, `MigrationIndexEntry`, `RecordKind`, `DecodeError` | `src/index.rs` |
+| `RuntimeMigrationLookup`, `RuntimeMigrationLookupEntry`, `RecordKind`, `DecodeError` | `src/index.rs` |
 | `ContractVersion([u8; 32])`, `ComponentName` | `src/version.rs` |
 
 ## Projection contract
@@ -86,12 +86,13 @@ identity, not a stringly version label. The schema generator emits one
 `ContractVersion` constant per signal-X crate; every type in that crate
 shares one hash.
 
-## Migration index
+## Runtime migration lookup
 
-`MigrationIndex` is the compile-time lookup table for historical
-signal-X libraries. Each `MigrationIndexEntry` carries a `ComponentName`,
-a `ContractVersion`, and a `decode: fn(bytes, kind) -> Result<String,
-DecodeError>` pointing at the matching historical crate. The index is
+`RuntimeMigrationLookup` is the compile-time-or-link-time decoder
+lookup for historical signal-X libraries. Each
+`RuntimeMigrationLookupEntry` carries a `ComponentName`, a
+`ContractVersion`, and a `decode: fn(bytes, kind) -> Result<String,
+DecodeError>` pointing at the matching historical crate. The lookup is
 built once at startup; lookup is O(n) over a small vector. Adding a new
 frozen historical crate adds one entry.
 
@@ -167,7 +168,7 @@ src/lib.rs           module re-exports
 src/projection.rs    VersionProjection, Projected, Identity, ProjectionError
 src/policy.rs        ComponentPolicy, PerOperationPolicy, WritePolicy, ReadPolicy, SubscribePolicy, OperationKind
 src/version.rs       ContractVersion, ComponentName, ContractVersionError
-src/index.rs         MigrationIndex, MigrationIndexEntry, RecordKind, DecodeError
+src/index.rs         RuntimeMigrationLookup, RuntimeMigrationLookupEntry, RecordKind, DecodeError
 tests/               trait/policy/index round-trip witnesses
 ```
 

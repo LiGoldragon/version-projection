@@ -1,7 +1,8 @@
 use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode};
 use version_projection::{
-    ComponentName, ContractVersion, Identity, OperationKind, PerOperationPolicy, Projected,
-    SubscribePolicy, VersionProjection,
+    ComponentName, ContractVersion, DecodeError, Identity, OperationKind, PerOperationPolicy,
+    Projected, RecordKind, RuntimeMigrationLookup, RuntimeMigrationLookupEntry, SubscribePolicy,
+    VersionProjection,
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -66,5 +67,38 @@ fn policy_records_keep_operation_kind_separate_from_projection_trait() {
     assert_eq!(
         policy.subscribe_policy,
         SubscribePolicy::TerminateAtHandover
+    );
+}
+
+#[test]
+fn runtime_migration_lookup_finds_decoder_by_component_and_contract_version() {
+    fn decode_record(bytes: &[u8], kind: &RecordKind) -> Result<String, DecodeError> {
+        let text =
+            std::str::from_utf8(bytes).map_err(|error| DecodeError::Failed(error.to_string()))?;
+        Ok(format!("{}:{text}", kind.as_str()))
+    }
+
+    let component = ComponentName::new("test-component");
+    let contract_version = ContractVersion::new([9; 32]);
+    let entry =
+        RuntimeMigrationLookupEntry::new(component.clone(), contract_version, decode_record);
+    let lookup = RuntimeMigrationLookup::new(vec![entry]);
+
+    let found = lookup
+        .find(&component, contract_version)
+        .expect("matching entry");
+
+    assert_eq!(found.component().as_str(), "test-component");
+    assert_eq!(found.contract_version(), contract_version);
+    assert_eq!(
+        found
+            .decode(b"hello", &RecordKind::new("Entry"))
+            .expect("decode"),
+        "Entry:hello"
+    );
+    assert!(
+        lookup
+            .find(&ComponentName::new("other-component"), contract_version)
+            .is_none()
     );
 }
