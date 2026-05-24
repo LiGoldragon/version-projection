@@ -172,6 +172,19 @@ src/index.rs         RuntimeMigrationLookup, RuntimeMigrationLookupEntry, Record
 tests/               trait/policy/index round-trip witnesses
 ```
 
+## Macro-pattern integration
+
+**Status:** integrated into the brilliant macro library pattern per `reports/designer/326-v13-spirit-complete-schema-vision.md §3` (schemas as macro-pattern instance).
+
+**Role:** this crate owns the `VersionProjection` trait, the `ContractVersion` / `ComponentName` types, the `RuntimeMigrationLookup` index, and the projection / replay machinery component daemons compose into their upgrade flow.
+
+**Integration target:** `VersionProjection` trait the macro emits impls of, derived from schema-diff per `/326-v12 §5`. The schema-engine upgrade computes the diff between adjacent schema versions (additions, removals, shape changes) and emits a per-version `impl VersionProjection` against this crate's trait, so the runtime can project archives across schema-hash boundaries without hand-written migration code. The trait surface stays stable; the macro becomes a new source of impls alongside hand-written ones during the migration window.
+
+**References:**
+- `reports/designer/326-v13-spirit-complete-schema-vision.md` — schema language + macro pattern
+- `reports/designer/324-migration-mvp-spirit-handover-re-specification.md` — migration MVP
+- `reports/operator/174-schema-import-header-design-critique-2026-05-24.md` — lowering + AssembledSchema form
+
 ## See also
 
 - `../signal-version-handover/ARCHITECTURE.md` — peer contract crate
