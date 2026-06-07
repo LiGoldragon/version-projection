@@ -1,9 +1,18 @@
-use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode, NotaTransparent};
+use nota_next::{Block, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
 
 #[derive(
-    Archive, RkyvSerialize, RkyvDeserialize, NotaTransparent, Debug, Clone, PartialEq, Eq, Hash,
+    Archive,
+    RkyvSerialize,
+    RkyvDeserialize,
+    NotaEncode,
+    NotaDecode,
+    Debug,
+    Clone,
+    PartialEq,
+    Eq,
+    Hash,
 )]
 pub struct ComponentName(String);
 
@@ -52,26 +61,71 @@ impl ContractVersion {
             .map_err(|_| ContractVersionError::InvalidLength { length })?;
         Ok(Self(bytes))
     }
-}
 
-impl NotaEncode for ContractVersion {
-    fn encode(&self, encoder: &mut Encoder) -> nota_codec::Result<()> {
-        encoder.write_bytes(&self.0)
+    pub fn try_from_nota_literal(literal: &str) -> Result<Self, ContractVersionError> {
+        let hex =
+            literal
+                .strip_prefix('#')
+                .ok_or_else(|| ContractVersionError::InvalidLiteral {
+                    value: literal.to_owned(),
+                })?;
+        let length = hex.len() / 2;
+        if hex.len() != 64 {
+            return Err(ContractVersionError::InvalidLength { length });
+        }
+
+        let mut bytes = [0_u8; 32];
+        for (index, pair) in hex.as_bytes().chunks_exact(2).enumerate() {
+            let high = Self::hex_digit(pair[0], literal)?;
+            let low = Self::hex_digit(pair[1], literal)?;
+            bytes[index] = (high << 4) | low;
+        }
+        Ok(Self(bytes))
+    }
+
+    pub fn to_nota_literal(&self) -> String {
+        let mut literal = String::with_capacity(65);
+        literal.push('#');
+        for byte in self.0 {
+            literal.push_str(&format!("{byte:02x}"));
+        }
+        literal
+    }
+
+    fn hex_digit(byte: u8, literal: &str) -> Result<u8, ContractVersionError> {
+        match byte {
+            b'0'..=b'9' => Ok(byte - b'0'),
+            b'a'..=b'f' => Ok(byte - b'a' + 10),
+            b'A'..=b'F' => Ok(byte - b'A' + 10),
+            _ => Err(ContractVersionError::InvalidLiteral {
+                value: literal.to_owned(),
+            }),
+        }
     }
 }
 
 impl NotaDecode for ContractVersion {
-    fn decode(decoder: &mut Decoder<'_>) -> nota_codec::Result<Self> {
-        let bytes = decoder.read_bytes()?;
-        Self::try_from_bytes(bytes).map_err(|error| nota_codec::Error::Validation {
-            type_name: "ContractVersion",
-            message: error.to_string(),
-        })
+    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+        let literal = block
+            .demote_to_string()
+            .ok_or(NotaDecodeError::ExpectedAtom {
+                type_name: "ContractVersion",
+            })?;
+        Self::try_from_nota_literal(literal)
+            .map_err(|error| NotaDecodeError::Parse(error.to_string()))
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Error)]
+impl NotaEncode for ContractVersion {
+    fn to_nota(&self) -> String {
+        self.to_nota_literal()
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Error)]
 pub enum ContractVersionError {
     #[error("contract version hash must be 32 bytes, got {length}")]
     InvalidLength { length: usize },
+    #[error("contract version must be a #hex byte literal: {value}")]
+    InvalidLiteral { value: String },
 }

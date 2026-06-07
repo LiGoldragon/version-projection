@@ -1,4 +1,4 @@
-use nota_codec::{Decoder, Encoder, NotaDecode, NotaEncode};
+use nota_next::{NotaEncode, NotaSource};
 use version_projection::{
     ComponentName, ContractVersion, DecodeError, Identity, OperationKind, PerOperationPolicy,
     Projected, RecordKind, RuntimeMigrationLookup, RuntimeMigrationLookupEntry, SubscribePolicy,
@@ -37,17 +37,15 @@ fn identity_projection_returns_unchanged_projected_type() {
 #[test]
 fn contract_version_projects_to_nota_byte_literal() {
     let version = ContractVersion::new([1; 32]);
-    let mut encoder = Encoder::new();
-
-    version.encode(&mut encoder).expect("encode");
-    let text = encoder.into_string();
+    let text = version.to_nota();
 
     assert_eq!(
         text,
         "#0101010101010101010101010101010101010101010101010101010101010101"
     );
-    let mut decoder = Decoder::new(&text);
-    let decoded = ContractVersion::decode(&mut decoder).expect("decode");
+    let decoded = NotaSource::new(&text)
+        .parse::<ContractVersion>()
+        .expect("decode");
     assert_eq!(decoded, version);
 }
 
