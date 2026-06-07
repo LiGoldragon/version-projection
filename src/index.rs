@@ -1,21 +1,10 @@
-use nota_next::{NotaDecode, NotaEncode};
+use nota_next::{Block, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
 
 use crate::{ComponentName, ContractVersion};
 
-#[derive(
-    Archive,
-    RkyvSerialize,
-    RkyvDeserialize,
-    NotaEncode,
-    NotaDecode,
-    Debug,
-    Clone,
-    PartialEq,
-    Eq,
-    Hash,
-)]
+#[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub struct RecordKind(String);
 
 impl RecordKind {
@@ -25,6 +14,18 @@ impl RecordKind {
 
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+}
+
+impl NotaDecode for RecordKind {
+    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+        String::from_nota_block(block).map(Self::new)
+    }
+}
+
+impl NotaEncode for RecordKind {
+    fn to_nota(&self) -> String {
+        self.0.clone()
     }
 }
 

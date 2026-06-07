@@ -50,6 +50,29 @@ fn contract_version_projects_to_nota_byte_literal() {
 }
 
 #[test]
+fn component_and_record_names_project_to_wire_tokens() {
+    let component = ComponentName::new("persona-spirit");
+    let kind = RecordKind::new("Entry");
+
+    assert_eq!(component.to_nota(), "persona-spirit");
+    assert_eq!(kind.to_nota(), "Entry");
+    assert_eq!(
+        NotaSource::new("persona-spirit")
+            .parse::<ComponentName>()
+            .expect("decode component")
+            .as_str(),
+        component.as_str()
+    );
+    assert_eq!(
+        NotaSource::new("Entry")
+            .parse::<RecordKind>()
+            .expect("decode record kind")
+            .as_str(),
+        kind.as_str()
+    );
+}
+
+#[test]
 fn subscription_policy_defaults_to_terminate_at_handover() {
     assert_eq!(
         SubscribePolicy::default(),
