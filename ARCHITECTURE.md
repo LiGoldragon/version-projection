@@ -14,7 +14,7 @@ trait, one marker for projected types, payloadless per-operation
 decoders, and the schema-version hash type. Runtime crates import it
 to build per-version transforms; the companion `signal-version-handover`
 contract ships beside it for the daemon-to-daemon wire shape, and
-`owner-signal-version-handover` owns administrative handover authority.
+`meta-signal-version-handover` owns administrative handover authority.
 
 ## Components
 
@@ -141,7 +141,7 @@ the upgrade socket itself.
 - The crate does not depend on `signal-frame`, `signal-sema`, or any
   `signal-persona-*` contract.
 - Administrative handover authority lives in
-  `owner-signal-version-handover`; this library stays projection and
+  `meta-signal-version-handover`; this library stays projection and
   policy vocabulary only.
 - Mirror payloads are raw bytes on the `signal-version-handover` wire;
   this library supplies projection after the receiver decodes those

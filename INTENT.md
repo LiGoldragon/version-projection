@@ -55,7 +55,7 @@ operational.* No daemon binary, no Cargo bin target, no socket, no
 persistent storage. It does not depend on `signal-frame`,
 `signal-sema`, or any `signal-persona-*` contract. Wire transport
 belongs to `signal-version-handover`; administrative handover authority
-belongs to `owner-signal-version-handover`; schema-hash generation
+belongs to `meta-signal-version-handover`; schema-hash generation
 belongs to the schema generator at build time.
 
 *Text projection is optional.* The default dependency graph is binary
