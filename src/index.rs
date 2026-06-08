@@ -1,3 +1,4 @@
+#[cfg(feature = "nota-text")]
 use nota_next::{Block, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
@@ -17,12 +18,14 @@ impl RecordKind {
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaDecode for RecordKind {
     fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
         String::from_nota_block(block).map(Self::new)
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaEncode for RecordKind {
     fn to_nota(&self) -> String {
         self.0.clone()

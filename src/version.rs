@@ -1,3 +1,4 @@
+#[cfg(feature = "nota-text")]
 use nota_next::{Block, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
@@ -15,12 +16,14 @@ impl ComponentName {
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaDecode for ComponentName {
     fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
         String::from_nota_block(block).map(Self::new)
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaEncode for ComponentName {
     fn to_nota(&self) -> String {
         self.0.clone()
@@ -105,6 +108,7 @@ impl ContractVersion {
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaDecode for ContractVersion {
     fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
         let literal = block
@@ -117,6 +121,7 @@ impl NotaDecode for ContractVersion {
     }
 }
 
+#[cfg(feature = "nota-text")]
 impl NotaEncode for ContractVersion {
     fn to_nota(&self) -> String {
         self.to_nota_literal()

@@ -86,6 +86,13 @@ identity, not a stringly version label. The schema generator emits one
 `ContractVersion` constant per signal-X crate; every type in that crate
 shares one hash.
 
+The NOTA projection is behind the `nota-text` feature. The default
+library graph carries the binary hash type, projection traits, policy
+enums, and runtime lookup without `nota-next`. Human-facing CLIs,
+schema witnesses, and text round-trip tests opt into `nota-text`;
+runtime daemons stay on the default binary graph unless they are
+explicitly acting at a human text edge.
+
 ## Runtime migration lookup
 
 `RuntimeMigrationLookup` is the compile-time-or-link-time decoder
@@ -128,6 +135,8 @@ the upgrade socket itself.
 - `ProjectionError::NotRepresentable` is the only error variant policy
   consumers branch on; other variants always reject.
 - `ContractVersion` is `[u8; 32]` — Blake3 schema hash, not a string.
+- `nota-text` is the only place this crate depends on `nota-next`; the
+  default dependency tree remains binary-only.
 - Default `SubscribePolicy` is `TerminateAtHandover`.
 - The crate does not depend on `signal-frame`, `signal-sema`, or any
   `signal-persona-*` contract.

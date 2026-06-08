@@ -12,10 +12,17 @@ publish      = false
 name = "version_projection"
 path = "src/lib.rs"
 
+[features]
+default = []
+nota-text = ["dep:nota-next"]
+
 [dependencies]
-nota-next  = { git = "https://github.com/LiGoldragon/nota-next.git", branch = "main" }
+nota-next  = { git = "https://github.com/LiGoldragon/nota-next.git", branch = "main", optional = true }
 rkyv       = { version = "0.8", default-features = false, features = ["std", "bytecheck", "little_endian", "pointer_width_32", "unaligned"] }
 thiserror  = "2"
+
+[dev-dependencies]
+nota-next  = { git = "https://github.com/LiGoldragon/nota-next.git", branch = "main" }
 
 [lints.rust]
 unsafe_code = "forbid"

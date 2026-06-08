@@ -1,3 +1,6 @@
+use std::process::Command;
+
+#[cfg(feature = "nota-text")]
 use nota_next::{NotaEncode, NotaSource};
 use version_projection::{
     ComponentName, ContractVersion, DecodeError, Identity, OperationKind, PerOperationPolicy,
@@ -35,6 +38,7 @@ fn identity_projection_returns_unchanged_projected_type() {
 }
 
 #[test]
+#[cfg(feature = "nota-text")]
 fn contract_version_projects_to_nota_byte_literal() {
     let version = ContractVersion::new([1; 32]);
     let text = version.to_nota();
@@ -50,6 +54,7 @@ fn contract_version_projects_to_nota_byte_literal() {
 }
 
 #[test]
+#[cfg(feature = "nota-text")]
 fn component_and_record_names_project_to_wire_tokens() {
     let component = ComponentName::new("persona-spirit");
     let kind = RecordKind::new("Entry");
@@ -69,6 +74,21 @@ fn component_and_record_names_project_to_wire_tokens() {
             .expect("decode record kind")
             .as_str(),
         kind.as_str()
+    );
+}
+
+#[test]
+fn default_dependency_tree_does_not_pull_nota_next() {
+    let output = Command::new(env!("CARGO"))
+        .args(["tree", "--edges", "normal", "--no-default-features"])
+        .output()
+        .expect("run cargo tree");
+
+    assert!(output.status.success(), "status: {:?}", output.status);
+    let tree = String::from_utf8(output.stdout).expect("cargo tree output");
+    assert!(
+        !tree.contains("nota-next"),
+        "default dependency tree unexpectedly contains nota-next:\n{tree}"
     );
 }
 

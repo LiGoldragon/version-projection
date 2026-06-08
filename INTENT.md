@@ -58,6 +58,13 @@ belongs to `signal-version-handover`; administrative handover authority
 belongs to `owner-signal-version-handover`; schema-hash generation
 belongs to the schema generator at build time.
 
+*Text projection is optional.* The default dependency graph is binary
+and type-only: no `nota-next`, no text parser, no text codec. The
+`nota-text` feature turns on NOTA encode/decode impls and human-facing
+round-trip witnesses for the same types. Runtime daemons should depend
+on the default feature set; CLI/tests/tools opt into `nota-text` at the
+edge.
+
 ## Schema-stack direction
 
 The schema-engine upgrade computes the diff between adjacent schema
@@ -70,7 +77,8 @@ ones during the migration window.
 ## See also
 
 - `ARCHITECTURE.md` — the projection trait, policy vocabulary, runtime
-  migration lookup, and version-identity types.
+  migration lookup, version-identity types, and the optional text
+  projection boundary.
 - `../signal-version-handover/ARCHITECTURE.md` — peer contract carrying
   the daemon-to-daemon wire shape.
 - `primary/skills/component-triad.md` — repo triad structure and the
