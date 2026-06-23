@@ -1,5 +1,5 @@
 #[cfg(feature = "nota-text")]
-use nota_next::{Block, NotaDecode, NotaDecodeError, NotaEncode};
+use nota::{Block, NotaDecode, NotaDecodeError, NotaEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
 

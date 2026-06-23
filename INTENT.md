@@ -59,7 +59,7 @@ belongs to `meta-signal-version-handover`; schema-hash generation
 belongs to the schema generator at build time.
 
 *Text projection is optional.* The default dependency graph is binary
-and type-only: no `nota-next`, no text parser, no text codec. The
+and type-only: no `nota`, no text parser, no text codec. The
 `nota-text` feature turns on NOTA encode/decode impls and human-facing
 round-trip witnesses for the same types. Runtime daemons should depend
 on the default feature set; CLI/tests/tools opt into `nota-text` at the
