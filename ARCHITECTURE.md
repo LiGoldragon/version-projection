@@ -104,9 +104,9 @@ enums, and runtime lookup without `nota`. Human-facing CLIs,
 schema witnesses, and text round-trip tests opt into `nota-text`;
 runtime daemons stay on the default binary graph unless they are
 explicitly acting at a human text edge. The `legacy-0v1` compatibility
-line pins that optional text surface to the legacy Nota 0.5 family used
-by the version-handover wire; it is separate from any Nota 0.9
-presentation-family release.
+line pins that optional text surface to the canonical legacy Nota 0.5
+family used by the version-handover wire; it is separate from any Nota
+0.9 presentation-family release.
 
 ## Runtime migration lookup
 
