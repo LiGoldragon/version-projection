@@ -103,7 +103,10 @@ library graph carries the binary hash type, projection traits, policy
 enums, and runtime lookup without `nota`. Human-facing CLIs,
 schema witnesses, and text round-trip tests opt into `nota-text`;
 runtime daemons stay on the default binary graph unless they are
-explicitly acting at a human text edge.
+explicitly acting at a human text edge. The optional presentation codec
+is pinned to an immutable Nota 0.9 revision. This crate imports no
+legacy Nota 0.5 coordination types, so its projection vocabulary cannot
+carry codec traits across those two families.
 
 ## Runtime migration lookup
 
