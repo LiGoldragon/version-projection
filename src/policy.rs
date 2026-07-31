@@ -2,7 +2,7 @@ use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 
 use crate::ComponentName;
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum OperationKind {
     AppendWrite,
@@ -26,7 +26,7 @@ impl OperationKind {
     }
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum WritePolicy {
     Mirror,
@@ -34,7 +34,7 @@ pub enum WritePolicy {
     Reject,
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ReadPolicy {
     ActiveProjectsResponse,
@@ -42,7 +42,7 @@ pub enum ReadPolicy {
     ActiveOnly,
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(
     Archive, RkyvSerialize, RkyvDeserialize, Debug, Default, Clone, Copy, PartialEq, Eq, Hash,
 )]
@@ -52,7 +52,7 @@ pub enum SubscribePolicy {
     TerminateAtHandover,
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PerOperationPolicy {
     pub write_policy: WritePolicy,
@@ -82,7 +82,7 @@ impl PerOperationPolicy {
     }
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq)]
 pub struct OperationPolicy {
     pub kind: OperationKind,
@@ -95,7 +95,7 @@ impl OperationPolicy {
     }
 }
 
-#[cfg_attr(feature = "nota-text", derive(nota::NotaDecode, nota::NotaEncode))]
+#[cfg_attr(feature = "dotos-text", derive(dotos::DotosDecode, dotos::DotosEncode))]
 #[derive(Archive, RkyvSerialize, RkyvDeserialize, Debug, Clone, PartialEq, Eq)]
 pub struct ComponentPolicy {
     pub component: ComponentName,

@@ -14,7 +14,7 @@ Forward and reverse projection are the same trait with the type parameters swapp
 
 `ContractVersion` stores the schema-version hash as `[u8; 32]` (Blake3) — a binary identity, not a stringly version label. The schema generator emits one `ContractVersion` constant per `signal-X` crate; every type in that crate shares one hash.
 
-The default dependency graph is binary and type-only. The `nota-text` feature turns on NOTA encode/decode impls for human-facing witnesses; runtime daemons depend on the default feature set.
+The default dependency graph is binary and type-only. The `dotos-text` feature turns on DOTOS encode/decode impls for human-facing witnesses; runtime daemons depend on the default feature set.
 
 ## TL;DR
 
@@ -92,16 +92,16 @@ doesn't represent.
 
 ## Version identity
 
-`ContractVersion` stores the schema-version hash as 32 bytes. The NOTA
+`ContractVersion` stores the schema-version hash as 32 bytes. The DOTOS
 projection uses the byte-literal form so a schema hash remains a binary
 identity, not a stringly version label. The schema generator emits one
 `ContractVersion` constant per signal-X crate; every type in that crate
 shares one hash.
 
-The NOTA projection is behind the `nota-text` feature. The default
+The DOTOS projection is behind the `dotos-text` feature. The default
 library graph carries the binary hash type, projection traits, policy
-enums, and runtime lookup without `nota`. Human-facing CLIs,
-schema witnesses, and text round-trip tests opt into `nota-text`;
+enums, and runtime lookup without `dotos`. Human-facing CLIs,
+schema witnesses, and text round-trip tests opt into `dotos-text`;
 runtime daemons stay on the default binary graph unless they are
 explicitly acting at a human text edge.
 
@@ -147,7 +147,7 @@ the upgrade socket itself.
 - `ProjectionError::NotRepresentable` is the only error variant policy
   consumers branch on; other variants always reject.
 - `ContractVersion` is `[u8; 32]` — Blake3 schema hash, not a string.
-- `nota-text` is the only place this crate depends on `nota`; the
+- `dotos-text` is the only place this crate depends on `dotos`; the
   default dependency tree remains binary-only.
 - Default `SubscribePolicy` is `TerminateAtHandover`.
 - The crate does not depend on `signal-frame`, `signal-sema`, or any
@@ -178,7 +178,7 @@ ruled out.*
 
 - **Per-operation policy generation from contract macros.** Today
   policy literals live in each consuming runtime crate. Alternative:
-  contract-macro generation from operation annotations. Lean: keep
+  contract-macro generation from operation andotostions. Lean: keep
   runtime literals until policy similarity across components justifies
   promotion.
 

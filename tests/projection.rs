@@ -1,7 +1,7 @@
 use std::process::Command;
 
-#[cfg(feature = "nota-text")]
-use nota::{NotaEncode, NotaSource};
+#[cfg(feature = "dotos-text")]
+use dotos::{DotosEncode, DotosSource};
 use version_projection::{
     ComponentName, ContractVersion, DecodeError, Identity, OperationKind, PerOperationPolicy,
     Projected, RecordKind, RuntimeMigrationLookup, RuntimeMigrationLookupEntry, SubscribePolicy,
@@ -38,38 +38,38 @@ fn identity_projection_returns_unchanged_projected_type() {
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
-fn contract_version_projects_to_nota_byte_literal() {
+#[cfg(feature = "dotos-text")]
+fn contract_version_projects_to_dotos_byte_literal() {
     let version = ContractVersion::new([1; 32]);
-    let text = version.to_nota();
+    let text = version.to_dotos();
 
     assert_eq!(
         text,
         "#0101010101010101010101010101010101010101010101010101010101010101"
     );
-    let decoded = NotaSource::new(&text)
+    let decoded = DotosSource::new(&text)
         .parse::<ContractVersion>()
         .expect("decode");
     assert_eq!(decoded, version);
 }
 
 #[test]
-#[cfg(feature = "nota-text")]
+#[cfg(feature = "dotos-text")]
 fn component_and_record_names_project_to_wire_tokens() {
     let component = ComponentName::new("persona-spirit");
     let kind = RecordKind::new("Entry");
 
-    assert_eq!(component.to_nota(), "persona-spirit");
-    assert_eq!(kind.to_nota(), "Entry");
+    assert_eq!(component.to_dotos(), "persona-spirit");
+    assert_eq!(kind.to_dotos(), "Entry");
     assert_eq!(
-        NotaSource::new("persona-spirit")
+        DotosSource::new("persona-spirit")
             .parse::<ComponentName>()
             .expect("decode component")
             .as_str(),
         component.as_str()
     );
     assert_eq!(
-        NotaSource::new("Entry")
+        DotosSource::new("Entry")
             .parse::<RecordKind>()
             .expect("decode record kind")
             .as_str(),
@@ -78,7 +78,7 @@ fn component_and_record_names_project_to_wire_tokens() {
 }
 
 #[test]
-fn default_dependency_tree_does_not_pull_nota() {
+fn default_dependency_tree_does_not_pull_dotos() {
     let output = Command::new(env!("CARGO"))
         .args(["tree", "--edges", "normal", "--no-default-features"])
         .output()
@@ -87,8 +87,8 @@ fn default_dependency_tree_does_not_pull_nota() {
     assert!(output.status.success(), "status: {:?}", output.status);
     let tree = String::from_utf8(output.stdout).expect("cargo tree output");
     assert!(
-        !tree.contains("nota"),
-        "default dependency tree unexpectedly contains nota:\n{tree}"
+        !tree.contains("dotos"),
+        "default dependency tree unexpectedly contains dotos:\n{tree}"
     );
 }
 

@@ -1,5 +1,5 @@
-#[cfg(feature = "nota-text")]
-use nota::{Block, NotaDecode, NotaDecodeError, NotaEncode};
+#[cfg(feature = "dotos-text")]
+use dotos::{Block, DotosDecode, DotosDecodeError, DotosEncode};
 use rkyv::{Archive, Deserialize as RkyvDeserialize, Serialize as RkyvSerialize};
 use thiserror::Error;
 
@@ -16,16 +16,16 @@ impl ComponentName {
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaDecode for ComponentName {
-    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
-        String::from_nota_block(block).map(Self::new)
+#[cfg(feature = "dotos-text")]
+impl DotosDecode for ComponentName {
+    fn from_dotos_block(block: &Block) -> Result<Self, DotosDecodeError> {
+        String::from_dotos_block(block).map(Self::new)
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaEncode for ComponentName {
-    fn to_nota(&self) -> String {
+#[cfg(feature = "dotos-text")]
+impl DotosEncode for ComponentName {
+    fn to_dotos(&self) -> String {
         self.0.clone()
     }
 }
@@ -66,7 +66,7 @@ impl ContractVersion {
         Ok(Self(bytes))
     }
 
-    pub fn try_from_nota_literal(literal: &str) -> Result<Self, ContractVersionError> {
+    pub fn try_from_dotos_literal(literal: &str) -> Result<Self, ContractVersionError> {
         let hex =
             literal
                 .strip_prefix('#')
@@ -87,7 +87,7 @@ impl ContractVersion {
         Ok(Self(bytes))
     }
 
-    pub fn to_nota_literal(&self) -> String {
+    pub fn to_dotos_literal(&self) -> String {
         let mut literal = String::with_capacity(65);
         literal.push('#');
         for byte in self.0 {
@@ -108,23 +108,23 @@ impl ContractVersion {
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaDecode for ContractVersion {
-    fn from_nota_block(block: &Block) -> Result<Self, NotaDecodeError> {
+#[cfg(feature = "dotos-text")]
+impl DotosDecode for ContractVersion {
+    fn from_dotos_block(block: &Block) -> Result<Self, DotosDecodeError> {
         let literal = block
             .demote_to_string()
-            .ok_or(NotaDecodeError::ExpectedAtom {
+            .ok_or(DotosDecodeError::ExpectedAtom {
                 type_name: "ContractVersion",
             })?;
-        Self::try_from_nota_literal(literal)
-            .map_err(|error| NotaDecodeError::Parse(error.to_string()))
+        Self::try_from_dotos_literal(literal)
+            .map_err(|error| DotosDecodeError::Parse(error.to_string()))
     }
 }
 
-#[cfg(feature = "nota-text")]
-impl NotaEncode for ContractVersion {
-    fn to_nota(&self) -> String {
-        self.to_nota_literal()
+#[cfg(feature = "dotos-text")]
+impl DotosEncode for ContractVersion {
+    fn to_dotos(&self) -> String {
+        self.to_dotos_literal()
     }
 }
 
