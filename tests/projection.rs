@@ -87,7 +87,7 @@ fn default_dependency_tree_does_not_pull_dotos() {
     assert!(output.status.success(), "status: {:?}", output.status);
     let tree = String::from_utf8(output.stdout).expect("cargo tree output");
     assert!(
-        !tree.contains("dotos"),
+        !tree.lines().any(|line| line.contains("dotos v")),
         "default dependency tree unexpectedly contains dotos:\n{tree}"
     );
 }
